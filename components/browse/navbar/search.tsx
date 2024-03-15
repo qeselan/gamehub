@@ -26,8 +26,6 @@ export const Search = () => {
       { skipEmptyString: true }
     );
 
-    console.log(url);
-
     router.push(url);
   };
 
