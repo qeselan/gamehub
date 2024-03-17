@@ -1,6 +1,9 @@
 "use client";
 
-import { UserItem, UserItemSkeleton } from "./user-item";
+import {
+  UserItem,
+  UserItemSkeleton,
+} from "@/components/browse/sidebar/user-item";
 
 import { useSidebar } from "@/store/use-sidebar";
 
