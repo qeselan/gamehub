@@ -10,7 +10,7 @@ export const getRecommended = async () => {
   } catch (error) {
     userId = null;
   }
-  let users;
+  let users = [];
 
   if (userId) {
     users = await db.user.findMany({
@@ -25,7 +25,25 @@ export const getRecommended = async () => {
             NOT: {
               followedBy: {
                 some: {
-                  followerId: userId as string,
+                  followerId: userId,
+                },
+              },
+            },
+          },
+          {
+            NOT: {
+              blockedBy: {
+                some: {
+                  blockerId: userId,
+                },
+              },
+            },
+          },
+          {
+            NOT: {
+              blocking: {
+                some: {
+                  blockedId: userId,
                 },
               },
             },

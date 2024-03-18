@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { getSelf } from "@/lib/auth-service";
+import { isBlockedByUser, isBlockingUser } from "./block-service";
 
 export const getFollowedUsers = async () => {
   try {
@@ -8,6 +9,28 @@ export const getFollowedUsers = async () => {
     const followedUsers = db.follow.findMany({
       where: {
         followerId: self.id,
+        following: {
+          AND: [
+            {
+              NOT: {
+                blockedBy: {
+                  some: {
+                    blockerId: self.id,
+                  },
+                },
+              },
+            },
+            {
+              NOT: {
+                blocking: {
+                  some: {
+                    blockedId: self.id,
+                  },
+                },
+              },
+            },
+          ],
+        },
       },
       include: {
         following: true,
@@ -62,6 +85,9 @@ export const followUser = async (id: string) => {
     throw new Error("Can't follow yourself");
   }
 
+  if ((await isBlockedByUser(id)) || (await isBlockingUser(id)))
+    throw new Error("Blocked or being blocked by the user");
+
   const existingFollow = await db.follow.findUnique({
     where: {
       followerId_followingId: {
@@ -103,6 +129,9 @@ export const unfollowUser = async (id: string) => {
   if (otherUser.id === self.id) {
     throw new Error("Can't unfollow yourself");
   }
+
+  if ((await isBlockedByUser(id)) || (await isBlockingUser(id)))
+    throw new Error("Blocked or being blocked by the user");
 
   const existingFollow = await db.follow.findUnique({
     where: {
