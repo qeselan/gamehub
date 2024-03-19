@@ -35,7 +35,7 @@ export const UserItem = ({ username, imageUrl, isLive }: UserItemProps) => {
       className={cn(
         "w-full h-12 justify-center",
         !collapsed && "lg:justify-start",
-        isActive && "bg-secondary"
+        isActive && "bg-background"
       )}
     >
       <Link href={href}>
